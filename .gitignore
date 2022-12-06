@@ -2,3 +2,6 @@
 /helm/api-platform/charts/*
 !/helm/api-platform/charts/.gitignore
 /.idea
+
+/api/data/valeursfoncieres-*.txt
+*.lock
