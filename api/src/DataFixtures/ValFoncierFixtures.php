@@ -10,9 +10,21 @@ class ValFoncierFixtures extends Fixture
 {
     public function load(ObjectManager $manager)
     {
+        gc_enable();
+        $files = scandir("./data");
 
+        print_r($files);
 
-        $csv = fopen("./data/valeursfoncieres-2018.txt", "r");
+        foreach ($files as $file)
+            if(!str_starts_with($file, "."))
+                $this->csv_load_datas($manager, "./data/" . $file);
+    }
+
+    private function csv_load_datas(ObjectManager $manager, string $file)
+    {
+        print("load file '" . $file . "'");
+
+        $csv = fopen($file, "r");
         $i = 0;
         fgetcsv($csv, 0, '|');
 
@@ -44,7 +56,6 @@ class ValFoncierFixtures extends Fixture
                 }
             }
         }
-
 
         $manager->flush();
     }
