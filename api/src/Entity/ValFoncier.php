@@ -6,11 +6,14 @@ use ApiPlatform\Metadata\ApiResource;
 use App\Repository\ValFoncierRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ValFoncierRepository::class)]
 #[ApiResource]
 class ValFoncier
 {
+    const TYPES = ["Maison", "Appartement"];
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -20,15 +23,19 @@ class ValFoncier
     private ?\DateTimeInterface $dateAquisition = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\Choice(choices: ValFoncier::TYPES, message: "choose a valid type")]
     private ?string $type = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
     private ?string $codePostal = null;
 
     #[ORM\Column(nullable: true)]
+    #[Assert\Range(min: 0)]
     private ?float $surface = null;
 
     #[ORM\Column]
+    #[Assert\Range(min: 0)]
     private ?float $prix = null;
 
     public function getId(): ?int
