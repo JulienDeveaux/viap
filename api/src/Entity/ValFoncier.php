@@ -3,13 +3,39 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\GraphQl\DeleteMutation;
+use ApiPlatform\Metadata\GraphQl\Mutation;
+use ApiPlatform\Metadata\GraphQl\Query;
+use ApiPlatform\Metadata\GraphQl\QueryCollection;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
+use App\Controller\CustomValFoncierController;
 use App\Repository\ValFoncierRepository;
+use App\Resolvers\TestResolver;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ValFoncierRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    controller: "App\\Controller\\CustomValFoncierController",
+    graphQlOperations: [
+        new Query(),
+        new QueryCollection(),
+        new Mutation(name: 'create'),
+        new Mutation(name: 'update'),
+        new DeleteMutation(name: 'delete'),
+        new Query(
+            resolver: TestResolver::class,
+            args: [],
+            name: 'notRetrievedQuery',
+        )
+    ]
+)]
 class ValFoncier
 {
     const TYPES = ["Maison", "Appartement"];
@@ -101,5 +127,10 @@ class ValFoncier
         $this->prix = $prix;
 
         return $this;
+    }
+
+    public function setId(int $int)
+    {
+        $this->id = $int;
     }
 }
