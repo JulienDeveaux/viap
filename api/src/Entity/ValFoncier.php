@@ -22,7 +22,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ValFoncierRepository::class)]
 #[ApiResource(
-    controller: "App\\Controller\\CustomValFoncierController",
     graphQlOperations: [
         new Query(),
         new QueryCollection(),
@@ -53,7 +52,6 @@ class ValFoncier
     private ?string $type = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank]
     private ?string $codePostal = null;
 
     #[ORM\Column(nullable: true)]
@@ -127,10 +125,5 @@ class ValFoncier
         $this->prix = $prix;
 
         return $this;
-    }
-
-    public function setId(int $int)
-    {
-        $this->id = $int;
     }
 }
