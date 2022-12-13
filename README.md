@@ -3,7 +3,7 @@ commande build : ``docker compose build --pull --no-cache
 
 commande start : ``docker compose up -d``
 
-commande fixtures : ``docker compose exec php bin/console doctrine:fixtures:load
+commande fixtures : ``docker compose exec php bin/console doctrine:fixtures:load --no-debug
 ``
 
 <h1 align="center"><a href="https://api-platform.com"><img src="https://api-platform.com/logo-250x250.png" alt="API Platform"></a></h1>

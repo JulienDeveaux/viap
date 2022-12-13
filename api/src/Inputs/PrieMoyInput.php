@@ -14,7 +14,5 @@ use Symfony\Component\PropertyInfo\Type;
 
 final class PrieMoyInput
 {
-
-    #[ApiProperty(builtinTypes: [new Type("int", true, collectionValueType: new Type(Type::BUILTIN_TYPE_INT))])]
-    public int $years;
+    public array $years;
 }
