@@ -15,7 +15,7 @@ class GraphOperationProvider implements ProviderInterface
 
         $test = new StdClass;
 
-        $test->test = "coucou " . $uriVariables['year'];
+        $test->test = "coucou ";
 
         return $test;
     }
