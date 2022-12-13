@@ -19,10 +19,6 @@ class GraphOperationProcessor implements ProcessorInterface
 
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = [])
     {
-        $test = new StdClass;
-
-        $test->test = "coucou from processor";
-
-        return $test;
+        return $this->service->prixM2ForYears($data->years);
     }
 }

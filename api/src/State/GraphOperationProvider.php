@@ -22,10 +22,6 @@ class GraphOperationProvider implements ProviderInterface
     {
         // Retrieve the state from somewhere
 
-        $test = new StdClass;
-
-        $test->test = "coucou ";
-
-        return $test;
+        return $this->service->prixM2($uriVariables['year']);
     }
 }
