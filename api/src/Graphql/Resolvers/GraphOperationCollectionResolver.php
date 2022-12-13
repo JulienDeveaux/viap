@@ -8,20 +8,30 @@ use ApiPlatform\State\Pagination\ArrayPaginator;
 use ApiPlatform\State\Pagination\Pagination;
 use ApiPlatform\State\ProviderInterface;
 use App\Graphql\Outputs\GraphOperationOutput;
+use App\Repository\ValFoncierRepository;
+use App\Services\GraphOperationService;
+use Doctrine\DBAL\Exception;
 
 class GraphOperationCollectionResolver implements ProviderInterface
 {
+    private readonly GraphOperationService $service;
+
+    public function __construct(ValFoncierRepository $repository)
+    {
+        $this->service = new GraphOperationService($repository);
+    }
 
 
+    /**
+     * @throws Exception
+     */
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): object|array|null
     {
         $filters = $context['filters'];
         $years = $filters['years'];
 
-        $test = new GraphOperationOutput();
+        $years = array_map(fn($year) => intval($year), $years);
 
-        $test->res = "coucou from resolvers  collection " . $years[0];
-
-        return [$test];
+        return [$this->service->prixM2ForYears($years)];
     }
 }
