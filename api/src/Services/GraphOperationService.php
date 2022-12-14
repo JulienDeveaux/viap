@@ -29,17 +29,17 @@ class GraphOperationService
      */
     public function prixM2ForYears(array $years)
     {
-        $minYear = min($years);
-        $maxYear = max($years);
+        if(count($years) === 0)
+            throw new Exception("No years provided");
 
         $vals = $this->repository->createQueryBuilder('n')->getEntityManager()->getConnection()
             ->executeQuery("SELECT extract(YEAR from n.date_aquisition) as year, sum(n.prix) AS sclr_0, count(n.prix) AS sclr_1
                 FROM val_foncier n
-                WHERE n.date_aquisition BETWEEN date('".$minYear."-01-01') AND date('".($maxYear)."-12-31')
+                WHERE extract(YEAR from n.date_aquisition) IN (" . implode(",", $years) . ")
                 group by extract(YEAR from n.date_aquisition)");
 
         $res = new GraphOperationOutput();
-        $res->res = " rowCount " . $vals->rowCount();
+        $res->res = "rowCount " . $vals->rowCount();
 
         $res->prixM2 = [];
 
