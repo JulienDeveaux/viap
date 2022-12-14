@@ -18,38 +18,51 @@ const Pagination = ({ collection }: Props) => {
 
   return (
     <nav aria-label="Page navigation">
-      <Link href={first ? first : "#"}>
-        <a
-          className={`btn btn-primary${previous ? "" : " disabled"}`}
-          aria-label="First page"
-        >
-          <span aria-hidden="true">&lArr;</span> First
-        </a>
-      </Link>
-      <Link href={previous ? previous : "#"}>
-        <a
-          className={`btn btn-primary${previous ? "" : " disabled"}`}
-          aria-label="Previous page"
-        >
-          <span aria-hidden="true">&larr;</span> Previous
-        </a>
-      </Link>
-      <Link href={next ? next : "#"}>
-        <a
-          className={`btn btn-primary${next ? "" : " disabled"}`}
-          aria-label="Next page"
-        >
-          Next <span aria-hidden="true">&rarr;</span>
-        </a>
-      </Link>
-      <Link href={last ? last : "#"}>
-        <a
-          className={`btn btn-primary${next ? "" : " disabled"}`}
-          aria-label="Last page"
-        >
-          Last <span aria-hidden="true">&rArr;</span>
-        </a>
-      </Link>
+      <ul className="inline-flex -space-x-px">
+        <li>
+          <Link href={first ? first.replace("_", "") : "#"}>
+            <a
+              className="px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+              aria-label="First page"
+            >
+              <span aria-hidden="true">&lArr;</span> First
+            </a>
+          </Link>
+        </li>
+
+        <li>
+          <Link href={previous ? previous.replace("_", "") : "#"}>
+            <a
+              className={"px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"}
+              aria-label="Previous page"
+            >
+              <span aria-hidden="true">&larr;</span> Previous
+            </a>
+          </Link>
+        </li>
+
+        <li>
+          <Link href={next ? next.replace("_", "") : "#"}>
+            <a
+              className="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+              aria-label="Next page"
+            >
+              Next <span aria-hidden="true">&rarr;</span>
+            </a>
+          </Link>
+        </li>
+
+        <li>
+          <Link href={last ? last.replace("_", "") : "#"}>
+            <a
+              className="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+              aria-label="Last page"
+            >
+              Last <span aria-hidden="true">&rArr;</span>
+            </a>
+          </Link>
+        </li>
+      </ul>
     </nav>
   );
 };

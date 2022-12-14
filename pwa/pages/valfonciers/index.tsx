@@ -21,7 +21,7 @@ const Page: NextComponentType<NextPageContext> = () => {
   if (!collection || !collection["hydra:member"]) return null;
 
   return (
-    <div>
+    <div className="p-2">
       <div>
         <Head>
           <title>ValFoncier List</title>
