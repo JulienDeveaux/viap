@@ -29,6 +29,7 @@ use App\State\GraphOperationProvider;
         new Post(
             uriTemplate: "/grapOperation/prix_moyen",
             input: PrieMoyInput::class,
+            output: GraphOperationOutput::class,
             name: "prix_moyen_post",
             processor: GraphOperationProcessor::class
         ),
