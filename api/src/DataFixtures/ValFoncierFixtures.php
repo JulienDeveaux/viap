@@ -42,7 +42,7 @@ class ValFoncierFixtures extends Fixture
                     $valFoncier->setPrix((float)$line[10]);
                     $valFoncier->setDateAquisition(DateTime::createFromFormat('d/m/Y', $line[8]));
                     $valFoncier->setType($type);
-                    $valFoncier->setSurface((float)$line[42]);
+                    $valFoncier->setSurface(((float)$line[42]) + ((float) $line[38]));
                     $manager->persist($valFoncier);
 
                     if ($i % 10_000 == 0)

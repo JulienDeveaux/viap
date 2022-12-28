@@ -33,9 +33,10 @@ class GraphOperationService
             throw new Exception("No years provided");
 
         $vals = $this->repository->createQueryBuilder('n')->getEntityManager()->getConnection()
-            ->executeQuery("SELECT extract(YEAR from n.date_aquisition) as year, sum(n.prix) AS sclr_0, count(n.prix) AS sclr_1
+            ->executeQuery("SELECT extract(YEAR from n.date_aquisition) as year, sum(n.prix) AS prix, sum(n.surface) AS surface, count(n.prix) AS nb
                 FROM val_foncier n
-                WHERE extract(YEAR from n.date_aquisition) IN (" . implode(",", $years) . ")
+                WHERE extract(YEAR from n.date_aquisition) IN (" . implode(",", $years) . ") AND
+                      n.prix > 0 AND n.surface > 0
                 group by extract(YEAR from n.date_aquisition)");
 
         $res = new GraphOperationOutput();
@@ -46,7 +47,7 @@ class GraphOperationService
         foreach ($vals->fetchAllAssociative() as $val)
         {
             $res->prixM2[] = [
-                $val['year'] => $val['sclr_0'] / $val['sclr_1']
+                $val['year'] => ($val['prix'] / $val['surface'])
             ];
         }
 
@@ -66,8 +67,10 @@ class GraphOperationService
         $endDate->setTime(0, 0);
 
         $query = $this->repository->createQueryBuilder('n')
-            ->select('sum(n.prix) as total_prix, count(n.prix) as total_terrain')
+            ->select('sum(n.prix) as total_prix, count(n.prix) as total_terrain, sum(n.surface) as total_surface')
             ->where('n.dateAquisition BETWEEN :start AND :end')
+            ->where('n.prix > 0')
+            ->where('n.surface > 0')
             ->setParameter('start', $startDate->format('Y-m-d H:i:s'))
             ->setParameter('end', $endDate->format('Y-m-d H:i:s'))
             ->getQuery();
@@ -78,7 +81,7 @@ class GraphOperationService
         $res = new GraphOperationOutput();
         $res->res = "coucou from service " . print_r($sql, true);
 
-        $res->prixM2 = [$years => $vals['total_prix'] / max($vals['total_terrain'], 1)];
+        $res->prixM2 = [$years => $vals['total_prix'] / max($vals['total_surface'], 1)];
 
         return $res;
     }
