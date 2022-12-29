@@ -100,11 +100,15 @@ class GraphOperationService
             default => "YEAR"
         };
 
+        $extractArray = array_map(fn($p) => "extract(" . $p . " from n.date_aquisition)", explode("-", $periodStr));
+        $concatStr   = join(", '/',", $extractArray);
+        $groupByStr  = join(",", $extractArray);
+
         $vals = $this->repository->createQueryBuilder('n')->getEntityManager()->getConnection()
-            ->executeQuery("SELECT count(*) as nb, concat(" . join(", '/',", array_map(fn($p) => "extract(" . $p . " from n.date_aquisition)", explode("-", $periodStr))) . ") as date
+            ->executeQuery("SELECT count(*) as nb, concat($concatStr) as date
             FROM val_foncier n
-            WHERE n.date_aquisition BETWEEN '" . $startDate->format('d/m/y') . "' AND '". $endDate->format('d/m/y') ."'
-            GROUP BY " . join(",", array_map(fn($p) => "extract(" . $p . " from n.date_aquisition)", explode("-", $periodStr))));
+            WHERE n.date_aquisition BETWEEN '" . $startDate->format('m/d/y') . "' AND '". $endDate->format('m/d/y') ."'
+            GROUP BY $groupByStr");
 
         $res = new PeriodCountOutput();
         $res->periods = [];
