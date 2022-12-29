@@ -61,6 +61,12 @@ use App\State\GraphOperationProvider;
             output: GraphOperationOutput::class,
             name: "for_years",
         ),
+        new Query(
+            resolver: GraphOperationResolver::class,
+            args: ["provider" => ["type" => "Int"], "startPeriod" => ["type" => "DateTime"], "endPeriod" => ["type" => "DateTime"]],
+            output: PeriodCountOutput::class,
+            name: "period_count"
+        ),
         new QueryCollection(
             args: ['years' => ['type' => "[Int]"]],
             paginationEnabled: false,

@@ -22,7 +22,12 @@
     "postcss": "^8.4.20",
     "autoprefixer": "^10.4.13",
     "react-d3-components": "^0.9.1",
-    "d3": "^7.7.0"
+    "d3": "^7.7.0",
+    "eslint": "^8.27.0",
+    "eslint-config-next": "^12.3.3",
+    "flowbite-datepicker": "^1.2.2",
+    "flowbite-react": "^0.3.7",
+    "flowbite": "^1.5.5"
   },
   "devDependencies": {
     "@babel/core": "^7.20.2",

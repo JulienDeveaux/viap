@@ -29,6 +29,7 @@ class GraphOperationResolver implements QueryItemResolverInterface
         {
             "for_yearGraphOperation" => $this->service->prixM2($args['year']),
             "for_yearsGraphOperation" => $this->service->prixM2ForYears($args['years']),
+            "period_countOperation" => $this->service->countPeriodFor($args["period"], $args["startPeriod"], $args["endPeriod"]),
 
             default => throw new Exception("Unknown operation"),
         };

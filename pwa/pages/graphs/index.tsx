@@ -5,8 +5,10 @@ import {GraphOperation} from "../../types/GraphOperation";
 import {useQuery} from "react-query";
 import React, {useState} from "react";
 import {LineChart, BarChart} from "react-d3-components";
+import {Select, Button} from "flowbite-react";
 
 import * as d3 from "d3";
+import {CountPeriodData} from "../../types/countPeriodData";
 
 const getTimeSeries = async (years: number[]) => await fetch<GraphOperation>('/grapOperation/prix_moyen', {
   method: 'POST',
@@ -15,7 +17,7 @@ const getTimeSeries = async (years: number[]) => await fetch<GraphOperation>('/g
   })
 });
 
-const getCountPeriod = async (period: number, startDate: Date, endDate: Date) => await fetch('/grapOperation/count_period', {
+const getCountPeriod = async (period: number, startDate: Date, endDate: Date) => await fetch<CountPeriodData>('/graphOperation/count_period', {
   method: 'POST',
   body: JSON.stringify({
     period: period,
@@ -45,19 +47,17 @@ const Page: NextComponentType<NextPageContext> = () =>
       <h1 className="text-3xl font-bold underline">Prix moyen du m2</h1>
 
       <label className="block mb-2 text-sm font-medium text-dark">Années:</label>
-      <select
+      <Select
         multiple={true}
-        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-        onChange={(e) => setYears(Array.from(e.target.selectedOptions, option => parseInt(option.value)))}>
+        onChange={(e: any) => setYears(Array.from(e.target.selectedOptions, option => parseInt(option.value)))}>
         <option value="2018">2018</option>
         <option value="2019">2019</option>
         <option value="2020">2020</option>
         <option value="2021">2021</option>
-      </select>
-      <button
-        className="mt-2 text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"
+      </Select>
+      <Button
         onClick={async () => setSeries((await getTimeSeries(years))?.data.prixM2 || [])}
-      >Soumettre</button>
+      >Soumettre</Button>
 
       {/*https://github.com/codesuki/react-d3-components#documentation*/}
       {series.length > 0 && <LineChart
@@ -84,29 +84,42 @@ const Page: NextComponentType<NextPageContext> = () =>
     const graphNbVente = () => <React.Fragment>
         <h1 className="text-3xl font-bold underline">Nombre de ventes</h1>
 
-        <select
-          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-          onChange={(e) => setPeriodNb(parseInt(e.target.selectedOptions[0].value))}>
+        <Select
+          onChange={(e: any) => setPeriodNb(parseInt(e.target.selectedOptions[0].value))}>
           <option value={0}>Jours</option>
           <option value={1}>Semaine</option>
           <option value={2}>mois</option>
           <option value={3}>année</option>
-        </select>
+        </Select>
 
 
         <label >Start date: </label>
-        <input type="date" onChange={(e) => console.log(e.target.value)} />
-
+        <input className="form-control" type="date" onChange={(e) => setStartPeriod(new Date(Date.parse(e.target.value)))} />
+        <br/>
         <label>End date: </label>
-        <input type="date" onChange={(e) => setEndPeriod(e.target.value)} />
+        <input className="form-control" type="date" onChange={(e) => setEndPeriod(new Date(Date.parse(e.target.value)))} />
+        <br/>
+        <Button
+          onClick={async () => setPeriodData((await getCountPeriod(periodNb, startPeriod, endPeriod))?.data.periods)}
+        >Soummettre</Button>
 
-        <button
-          className="mt-2 text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"
-          onClick={async () => setPeriodData(await getCountPeriod(periodNb, startPeriod, endPeriod))}
-        >Soummettre</button>
-
-      {countPeriodData && <BarChart
-
+      {countPeriodData && Object.keys(countPeriodData).length > 0 && <BarChart
+        width={window.innerWidth}
+        height={400}
+        className={"text-white"}
+        margin={{top: 10, bottom: 50, left: 100, right: 10}}
+        data={{
+          labels: Object.keys(countPeriodData),
+          values: Object.keys(countPeriodData).map(key => ({x: key, y: countPeriodData[key]}))
+        }}
+        yAxis={{
+          label: "nombre de vente"
+        }}
+        xAxis={{
+          label: "Periodes (" + (periodNb == 0 ? "jours" : periodNb == 1 ? "semaines" : periodNb == 2 ? "mois" : "années") + ")",
+          tickArguments: [Object.keys(countPeriodData).length],
+        }}
+        tooltipHtml={(x: any) => `${x}: ${parseInt(countPeriodData[x]).toLocaleString()}`}
       />}
     </React.Fragment>
 
@@ -116,13 +129,12 @@ const Page: NextComponentType<NextPageContext> = () =>
               {/*ajoute les balise dans le head de la page dynamiquement*/}
               <title>Graphs</title>
             </Head>
-            <select
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              onChange={(e) => setGraph(e.target.selectedOptions[0].value)}>
+            <Select
+              onChange={(e: any) => setGraph(e.target.selectedOptions[0].value)}>
               <option value={0}>prix m²</option>
               <option value={1}>Nombre de vente</option>
               <option value={2}>Répartition des ventes</option>
-            </select>
+            </Select>
 
           {typeGraph == 0 ? graphPrixMcarre() : typeGraph == 1 ? graphNbVente() : ""}
         </div>
