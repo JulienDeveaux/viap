@@ -6,6 +6,8 @@ commande start : ``docker compose up -d``
 commande fixtures : ``docker compose exec php bin/console doctrine:fixtures:load --no-debug
 ``
 
+install packages after compose up: ``docker compose exec pwa pnpm i``
+
 <h1 align="center"><a href="https://api-platform.com"><img src="https://api-platform.com/logo-250x250.png" alt="API Platform"></a></h1>
 
 API Platform is a next-generation web framework designed to easily create API-first projects without compromising extensibility
