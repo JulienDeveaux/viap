@@ -4,7 +4,7 @@ import {fetch} from "../../utils/dataAccess";
 import {GraphOperation} from "../../types/GraphOperation";
 import {useQuery} from "react-query";
 import React, {useState} from "react";
-import {LineChart, BarChart} from "react-d3-components";
+import {LineChart, BarChart, PieChart} from "react-d3-components";
 import {Select, Button} from "flowbite-react";
 
 import * as d3 from "d3";
@@ -26,17 +26,26 @@ const getCountPeriod = async (period: number, startDate: Date, endDate: Date) =>
   })
 })
 
+const getRepartitionRegion = async (year : number) => await fetch<GraphOperation>('/graphOperation/repartitionRegion', {
+  method: 'POST',
+  body: JSON.stringify({
+    year : year
+  })
+})
+
 const Page: NextComponentType<NextPageContext> = () =>
 {
     const [typeGraph, setGraph] = useState<number>(0);
 
     const [series, setSeries] = useState<any>([]);
     const [years, setYears] = useState<number[]>([]);
+    const [year, setYear] = useState<number>(2018);
 
     const [periodNb, setPeriodNb] = useState<number>(0);
     const [startPeriod, setStartPeriod] = useState<Date>(new Date(Date.now()));
     const [endPeriod, setEndPeriod] = useState<Date>(new Date(new Date(Date.now()).setDate(startPeriod.getDate() + 1)));
     const [countPeriodData, setPeriodData] = useState<any>(undefined);
+    const [repartitionData, setRepartitionData] = useState<any>(undefined);
 
     const datas: any = {};
 
@@ -101,7 +110,7 @@ const Page: NextComponentType<NextPageContext> = () =>
         <br/>
         <Button
           onClick={async () => setPeriodData((await getCountPeriod(periodNb, startPeriod, endPeriod))?.data.periods)}
-        >Soummettre</Button>
+        >Soumettre</Button>
 
       {countPeriodData && Object.keys(countPeriodData).length > 0 && <BarChart
         width={window.innerWidth}
@@ -116,17 +125,46 @@ const Page: NextComponentType<NextPageContext> = () =>
           label: "nombre de vente"
         }}
         xAxis={{
-          label: "Periodes (" + (periodNb == 0 ? "jours" : periodNb == 1 ? "semaines" : periodNb == 2 ? "mois" : "années") + ")",
+          label: "Périodes (" + (periodNb == 0 ? "jours" : periodNb == 1 ? "semaines" : periodNb == 2 ? "mois" : "années") + ")",
           tickArguments: [Object.keys(countPeriodData).length],
         }}
         tooltipHtml={(x: any) => `${x}: ${parseInt(countPeriodData[x]).toLocaleString()}`}
       />}
     </React.Fragment>
 
+  const graphRepartitionVente = () => <React.Fragment>
+    <h1 className="text-3xl font-bold underline">Répartition du nombre de vente par région</h1>
+
+    <label className="block mb-2 text-sm font-medium text-dark">Années:</label>
+      <Select
+        multiple={false}
+        onChange={(e: any) => setYear(parseInt(e.target.selectedOptions[0].value))}>
+        <option value="2018">2018</option>
+        <option value="2019">2019</option>
+        <option value="2020">2020</option>
+        <option value="2021">2021</option>
+      </Select>
+      <Button
+        onClick={async () => setRepartitionData((await getRepartitionRegion(year))?.data.values || [])}
+      >Soumettre</Button>
+
+    {repartitionData && Object.keys(repartitionData).length > 0 && <><h2 className="block mb-2 text-xl font-large text-center text-dark">Année {year}</h2><PieChart
+      width={window.innerWidth}
+      height={400}
+      sort={d3.ascending}
+      className={"text-white"}
+      margin={{top: 10, bottom: 50, left: 0, right: 10}}
+      data={{
+        labels: Object.keys(repartitionData),
+        values: Object.keys(repartitionData).map(key => ({x: key, y: repartitionData[key]}))
+      }}
+      tooltipHtml={(x: any) => `${x}: ${parseInt(repartitionData[x]).toLocaleString()}`}/></>}
+  </React.Fragment>
+
     return (
         <div className="p-3">
             <Head>
-              {/*ajoute les balise dans le head de la page dynamiquement*/}
+              {/*ajoute les balises dans le head de la page dynamiquement*/}
               <title>Graphs</title>
             </Head>
             <Select
@@ -136,7 +174,7 @@ const Page: NextComponentType<NextPageContext> = () =>
               <option value={2}>Répartition des ventes</option>
             </Select>
 
-          {typeGraph == 0 ? graphPrixMcarre() : typeGraph == 1 ? graphNbVente() : ""}
+          {typeGraph == 0 ? graphPrixMcarre() : typeGraph == 1 ? graphNbVente() : typeGraph == 2 ? graphRepartitionVente() : ""}
         </div>
     );
 };

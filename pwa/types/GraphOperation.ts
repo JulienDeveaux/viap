@@ -5,7 +5,9 @@ export class GraphOperation
   constructor(
     _id?: string,
     public res?: string,
-    public prixM2?: number[]
+    public prixM2?: number[],
+
+    public values?: string[]
   ) {
     this["@id"] = _id;
   }

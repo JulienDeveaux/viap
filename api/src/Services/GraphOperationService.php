@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Graphql\Outputs\GraphOperationOutput;
 use App\Graphql\Outputs\PeriodCountOutput;
+use App\Graphql\Outputs\RepartitionRegionForYearOutput;
 use App\Repository\ValFoncierRepository;
 use DateTime;
 use Doctrine\DBAL\Exception;
@@ -118,6 +119,26 @@ class GraphOperationService
             $res->periods[$val["date"]] = $val["nb"];
         }
 
+        return $res;
+    }
+
+    public function repartitionRegionForYear($year)
+    {
+        $vals = $this->repository->createQueryBuilder('n')->getEntityManager()->getConnection()
+            ->executeQuery("SELECT count(*) as nb, left(code_postal, -3) as region
+            FROM val_foncier n
+            WHERE extract(YEAR from n.date_aquisition) = $year
+            GROUP BY left(code_postal, -3)");
+        $res = new RepartitionRegionForYearOutput();
+
+        $res->values = [];
+
+        foreach ($vals->fetchAllAssociative() as $val)
+        {
+            if($val["region"] === "")       // don't take data without region
+                continue;
+            $res->values[$val["region"]] = $val["nb"];
+        }
         return $res;
     }
 }

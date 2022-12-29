@@ -14,10 +14,12 @@ use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use App\Graphql\Outputs\GraphOperationOutput;
 use App\Graphql\Outputs\PeriodCountOutput;
+use App\Graphql\Outputs\RepartitionRegionForYearOutput;
 use App\Graphql\Resolvers\GraphOperationCollectionResolver;
 use App\Graphql\Resolvers\GraphOperationResolver;
 use App\Inputs\CountPeriodInput;
 use App\Inputs\PrieMoyInput;
+use App\Inputs\RepartitionRegionInput;
 use App\State\GraphOperationProcessor;
 use App\State\GraphOperationProvider;
 
@@ -29,7 +31,14 @@ use App\State\GraphOperationProvider;
             provider: GraphOperationProvider::class
         ),
         new Post(
-            uriTemplate: "/grapOperation/prix_moyen",
+            uriTemplate: "/graphOperation/repartitionRegion",
+            input: RepartitionRegionInput::class,
+            output: RepartitionRegionForYearOutput::class,
+            name: "repartition_region_post",
+            processor: GraphOperationProcessor::class
+        ),
+        new Post(
+            uriTemplate: "/graphOperation/prix_moyen",
             input: PrieMoyInput::class,
             output: GraphOperationOutput::class,
             name: "prix_moyen_post",
