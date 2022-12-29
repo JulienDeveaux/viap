@@ -151,11 +151,11 @@ const Page: NextComponentType<NextPageContext> = () =>
     {repartitionData && Object.keys(repartitionData).length > 0 && <><h2 className="block mb-2 text-xl font-large text-center text-dark">Année {year}</h2><PieChart
       width={window.innerWidth}
       height={400}
-      sort={d3.ascending}
+      sort={d3.values}
       className={"text-white"}
       margin={{top: 10, bottom: 50, left: 0, right: 10}}
       data={{
-        labels: Object.keys(repartitionData),
+        label: year,
         values: Object.keys(repartitionData).map(key => ({x: key, y: repartitionData[key]}))
       }}
       tooltipHtml={(x: any) => `${x}: ${parseInt(repartitionData[x]).toLocaleString()}`}/></>}

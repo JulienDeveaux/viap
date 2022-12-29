@@ -139,6 +139,21 @@ class GraphOperationService
                 continue;
             $res->values[$val["region"]] = $val["nb"];
         }
+
+        $departementNames = $this->repository->createQueryBuilder('n')->getEntityManager()->getConnection()
+            ->executeQuery("SELECT * FROM Departement_names");
+        $departementNamesArray = [];
+        foreach($departementNames->fetchAllAssociative() as $name)
+        {
+            $departementNamesArray[(int)$name["code"]] = $name["name"];
+
+        }
+        foreach ($res->values as $code => $nb)
+        {
+            $res->values[$departementNamesArray[$code]] = $nb;
+            unset($res->values[$code]);
+        }
+
         return $res;
     }
 }
