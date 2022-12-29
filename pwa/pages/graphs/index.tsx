@@ -10,7 +10,7 @@ import {Select, Button} from "flowbite-react";
 import * as d3 from "d3";
 import {CountPeriodData} from "../../types/countPeriodData";
 
-const getTimeSeries = async (years: number[]) => await fetch<GraphOperation>('/grapOperation/prix_moyen', {
+const getTimeSeries = async (years: number[]) => await fetch<GraphOperation>('/graphOperation/prix_moyen', {
   method: 'POST',
   body: JSON.stringify({
     years: years
