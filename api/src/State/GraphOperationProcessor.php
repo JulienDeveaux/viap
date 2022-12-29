@@ -19,6 +19,12 @@ class GraphOperationProcessor implements ProcessorInterface
 
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = [])
     {
-        return $this->service->prixM2ForYears($data->years);
+        return match ($operation->getName())
+        {
+            "count_period_post" => $this->service->countPeriodFor($data->period, $data->startPeriod, $data->endPeriod),
+            "prix_moyen_post" => $this->service->prixM2ForYears($data->years),
+            default => null,
+        };
+
     }
 }

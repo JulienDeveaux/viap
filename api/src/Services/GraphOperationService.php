@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Graphql\Outputs\GraphOperationOutput;
+use App\Graphql\Outputs\PeriodCountOutput;
 use App\Repository\ValFoncierRepository;
 use DateTime;
 use Doctrine\DBAL\Exception;
@@ -82,6 +83,36 @@ class GraphOperationService
         $res->res = "coucou from service " . print_r($sql, true);
 
         $res->prixM2 = [$years => $vals['total_prix'] / max($vals['total_surface'], 1)];
+
+        return $res;
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function countPeriodFor(int $period, DateTime $startDate, DateTime $endDate): PeriodCountOutput
+    {
+        $periodStr = match ($period)
+        {
+            0 => "DAY-MONTH-YEAR",
+            1 => "WEEK-YEAR",
+            2 => "MONTH-YEAR",
+            default => "YEAR"
+        };
+
+        $vals = $this->repository->createQueryBuilder('n')->getEntityManager()->getConnection()
+            ->executeQuery("SELECT count(*) as nb, concat(" . join(", '/',", array_map(fn($p) => "extract(" . $p . " from n.date_aquisition)", explode("-", $periodStr))) . ") as date
+            FROM val_foncier n
+            WHERE n.date_aquisition BETWEEN '" . $startDate->format('d/m/y') . "' AND '". $endDate->format('d/m/y') ."'
+            GROUP BY " . join(",", array_map(fn($p) => "extract(" . $p . " from n.date_aquisition)", explode("-", $periodStr))));
+
+        $res = new PeriodCountOutput();
+        $res->periods = [];
+
+        foreach ($vals->fetchAllAssociative() as $val)
+        {
+            $res->periods[$val["date"]] = $val["nb"];
+        }
 
         return $res;
     }

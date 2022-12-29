@@ -13,8 +13,10 @@ use ApiPlatform\Metadata\GraphQl\QueryCollection;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use App\Graphql\Outputs\GraphOperationOutput;
+use App\Graphql\Outputs\PeriodCountOutput;
 use App\Graphql\Resolvers\GraphOperationCollectionResolver;
 use App\Graphql\Resolvers\GraphOperationResolver;
+use App\Inputs\CountPeriodInput;
 use App\Inputs\PrieMoyInput;
 use App\State\GraphOperationProcessor;
 use App\State\GraphOperationProvider;
@@ -31,6 +33,13 @@ use App\State\GraphOperationProvider;
             input: PrieMoyInput::class,
             output: GraphOperationOutput::class,
             name: "prix_moyen_post",
+            processor: GraphOperationProcessor::class
+        ),
+        new Post(
+            uriTemplate: "/graphOperation/count_period",
+            input: CountPeriodInput::class,
+            output: PeriodCountOutput::class,
+            name: "count_period_post",
             processor: GraphOperationProcessor::class
         ),
         new GetCollection(
