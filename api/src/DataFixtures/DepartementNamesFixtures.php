@@ -107,6 +107,7 @@ class DepartementNamesFixtures extends Fixture
             93 => "Seine-Saint-Denis",
             94 => "Val-de-Marne",
             95 => "Val-d'Oise",
+            97 => "DOM",
             971 => "Guadeloupe",
             972 => "Martinique",
             973 => "Guyane",
