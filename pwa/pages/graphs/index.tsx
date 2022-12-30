@@ -40,6 +40,7 @@ const Page: NextComponentType<NextPageContext> = () =>
     const [series, setSeries] = useState<any>([]);
     const [years, setYears] = useState<number[]>([]);
     const [year, setYear] = useState<number>(2018);
+    const [loading, setLoading] = useState<boolean>(false);
 
     const [periodNb, setPeriodNb] = useState<number>(0);
     const [startPeriod, setStartPeriod] = useState<Date>(new Date(Date.now()));
@@ -65,12 +66,16 @@ const Page: NextComponentType<NextPageContext> = () =>
         <option value="2021">2021</option>
       </Select>
       <Button
-        onClick={async () => setSeries((await getTimeSeries(years))?.data.prixM2 || [])}
+        onClick={async () => {
+          setLoading(true);
+          setSeries((await getTimeSeries(years))?.data.prixM2 || []);
+          setLoading(false);
+        }}
       >Soumettre</Button>
 
       {/*https://github.com/codesuki/react-d3-components#documentation*/}
       {series.length > 0 && <LineChart
-        width={500}
+        width={window.innerWidth - 10}
         height={400}
         data={{
           label: Object.keys(datas),
@@ -109,11 +114,15 @@ const Page: NextComponentType<NextPageContext> = () =>
         <input className="form-control" type="date" onChange={(e) => setEndPeriod(new Date(Date.parse(e.target.value)))} />
         <br/>
         <Button
-          onClick={async () => setPeriodData((await getCountPeriod(periodNb, startPeriod, endPeriod))?.data.periods)}
+          onClick={async () => {
+            setLoading(true);
+            setPeriodData((await getCountPeriod(periodNb, startPeriod, endPeriod))?.data.periods);
+            setLoading(false);
+          }}
         >Soumettre</Button>
 
       {countPeriodData && Object.keys(countPeriodData).length > 0 && <BarChart
-        width={window.innerWidth}
+        width={window.innerWidth - 10}
         height={400}
         className={"text-white"}
         margin={{top: 10, bottom: 50, left: 100, right: 10}}
@@ -145,11 +154,15 @@ const Page: NextComponentType<NextPageContext> = () =>
         <option value="2021">2021</option>
       </Select>
       <Button
-        onClick={async () => setRepartitionData((await getRepartitionRegion(year))?.data.values || [])}
+        onClick={async () => {
+          setLoading(true);
+          setRepartitionData((await getRepartitionRegion(year))?.data.values || [])
+          setLoading(false);
+        }}
       >Soumettre</Button>
 
     {repartitionData && Object.keys(repartitionData).length > 0 && <><h2 className="block mb-2 text-xl font-large text-center text-dark">Année {year}</h2><PieChart
-      width={window.innerWidth}
+      width={window.innerWidth - 10}
       height={400}
       sort={d3.values}
       className={"text-white"}
@@ -174,7 +187,13 @@ const Page: NextComponentType<NextPageContext> = () =>
               <option value={2}>Répartition des ventes</option>
             </Select>
 
-          {typeGraph == 0 ? graphPrixMcarre() : typeGraph == 1 ? graphNbVente() : typeGraph == 2 ? graphRepartitionVente() : ""}
+          {loading ? <div className="loader" style={{marginTop: "50px!important", margin: "auto"}}>
+              <span></span>
+              <span></span>
+              <span></span>
+              <h2>Loading ...</h2>
+            </div>
+            : typeGraph == 0 ? graphPrixMcarre() : typeGraph == 1 ? graphNbVente() : typeGraph == 2 ? graphRepartitionVente() : ""}
         </div>
     );
 };
