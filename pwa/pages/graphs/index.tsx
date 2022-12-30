@@ -36,9 +36,10 @@ const getRepartitionRegion = async (year : number, mode: number) => await fetch<
 const Page: NextComponentType<NextPageContext> = () => {
   const [typeGraph, setGraph] = useState<number>(0);
 
-  const [series, setSeries] = useState<any>([]);
-  const [years, setYears] = useState<number[]>([]);
-  const [year, setYear] = useState<number>(2018);
+    const [series, setSeries] = useState<any>([]);
+    const [years, setYears] = useState<number[]>([]);
+    const [year, setYear] = useState<number>(2018);
+    const [loading, setLoading] = useState<boolean>(false);
 
   const [periodNb, setPeriodNb] = useState<number>(0);
   const [startPeriod, setStartPeriod] = useState<Date>(new Date(Date.now()));
@@ -70,31 +71,27 @@ const Page: NextComponentType<NextPageContext> = () => {
       onClick={async () => setSeries((await getTimeSeries(years))?.data.prixM2 || [])}
     >Soumettre</Button>
 
-    {/*https://github.com/codesuki/react-d3-components#documentation*/}
-    {series.length > 0 && <LineChart
-      width={500}
-      height={400}
-      data={{
-        label: Object.keys(datas),
-        values: Object.keys(datas).map(key => ({x: new Date(Number(key), 1, 1), y: parseFloat(datas[key])}))
-      }}
-      tooltipHtml={(_: any, {x, y}: any) => `${x.getFullYear()}: ${y} €`}
-      margin={{top: 10, bottom: 50, left: 100, right: 10}}
-      xAxis={{
-        label: "Années",
-        tickFormat: (x: any) => {
-          return x.getFullYear();
-        },
-        tickArguments: [Object.keys(datas).length],
-      }}
-      yAxis={{
-        label: "prix (€)",
-        tickFormat: (x: any) => {
-          return x;
-        },
-      }}
-    />}
-  </React.Fragment>
+      {/*https://github.com/codesuki/react-d3-components#documentation*/}
+      {series.length > 0 && <LineChart
+        width={window.innerWidth - 10}
+        height={400}
+        data={{
+          label: Object.keys(datas),
+          values: Object.keys(datas).map(key => ({x: new Date(Number(key), 1, 1), y: parseFloat(datas[key])}))
+        }}
+        tooltipHtml={(_: any, {x, y}: any) => `${x.getFullYear()}: ${y} €`}
+        margin={{top: 10, bottom: 50, left: 100, right: 10}}
+        xAxis={{
+          label: "Années",
+          tickFormat: (x: any) => { return x.getFullYear(); },
+          tickArguments: [Object.keys(datas).length],
+        }}
+        yAxis={{
+          label: "prix (€)",
+          tickFormat: (x: any) => { return x; },
+        }}
+      />}
+    </React.Fragment>
 
   const graphNbVente = () => <React.Fragment>
     <h1 className="text-3xl font-bold underline">Nombre de ventes</h1>
@@ -108,35 +105,39 @@ const Page: NextComponentType<NextPageContext> = () => {
     </Select>
 
 
-    <label>Start date: </label>
-    <input className="form-control" type="date" onChange={(e) => setStartPeriod(new Date(Date.parse(e.target.value)))}/>
-    <br/>
-    <label>End date: </label>
-    <input className="form-control" type="date" onChange={(e) => setEndPeriod(new Date(Date.parse(e.target.value)))}/>
-    <br/>
-    <Button
-      onClick={async () => setPeriodData((await getCountPeriod(periodNb, startPeriod, endPeriod))?.data.periods)}
-    >Soumettre</Button>
+        <label >Start date: </label>
+        <input className="form-control" type="date" onChange={(e) => setStartPeriod(new Date(Date.parse(e.target.value)))} />
+        <br/>
+        <label>End date: </label>
+        <input className="form-control" type="date" onChange={(e) => setEndPeriod(new Date(Date.parse(e.target.value)))} />
+        <br/>
+        <Button
+          onClick={async () => {
+            setLoading(true);
+            setPeriodData((await getCountPeriod(periodNb, startPeriod, endPeriod))?.data.periods);
+            setLoading(false);
+          }}
+        >Soumettre</Button>
 
-    {countPeriodData && Object.keys(countPeriodData).length > 0 && <BarChart
-      width={window.innerWidth}
-      height={400}
-      className={"text-white"}
-      margin={{top: 10, bottom: 50, left: 100, right: 10}}
-      data={{
-        labels: Object.keys(countPeriodData),
-        values: Object.keys(countPeriodData).map(key => ({x: key, y: countPeriodData[key]}))
-      }}
-      yAxis={{
-        label: "nombre de vente"
-      }}
-      xAxis={{
-        label: "Périodes (" + (periodNb == 0 ? "jours" : periodNb == 1 ? "semaines" : periodNb == 2 ? "mois" : "années") + ")",
-        tickArguments: [Object.keys(countPeriodData).length],
-      }}
-      tooltipHtml={(x: any) => `${x}: ${parseInt(countPeriodData[x]).toLocaleString()}`}
-    />}
-  </React.Fragment>
+      {countPeriodData && Object.keys(countPeriodData).length > 0 && <BarChart
+        width={window.innerWidth - 10}
+        height={400}
+        className={"text-white"}
+        margin={{top: 10, bottom: 50, left: 100, right: 10}}
+        data={{
+          labels: Object.keys(countPeriodData),
+          values: Object.keys(countPeriodData).map(key => ({x: key, y: countPeriodData[key]}))
+        }}
+        yAxis={{
+          label: "nombre de vente"
+        }}
+        xAxis={{
+          label: "Périodes (" + (periodNb == 0 ? "jours" : periodNb == 1 ? "semaines" : periodNb == 2 ? "mois" : "années") + ")",
+          tickArguments: [Object.keys(countPeriodData).length],
+        }}
+        tooltipHtml={(x: any) => `${x}: ${parseInt(countPeriodData[x]).toLocaleString()}`}
+      />}
+    </React.Fragment>
 
   const graphRepartitionVente = () => <React.Fragment>
     <h1 className="text-3xl font-bold underline">Répartition du nombre de vente par région</h1>
@@ -243,9 +244,15 @@ const Page: NextComponentType<NextPageContext> = () => {
         <option value={2}>Répartition des ventes</option>
       </Select>
 
-      {typeGraph == 0 ? graphPrixMcarre() : typeGraph == 1 ? graphNbVente() : typeGraph == 2 ? graphRepartitionVente() : ""}
-    </div>
-  );
+          {loading ? <div className="loader" style={{marginTop: "50px!important", margin: "auto"}}>
+              <span></span>
+              <span></span>
+              <span></span>
+              <h2>Loading ...</h2>
+            </div>
+            : typeGraph == 0 ? graphPrixMcarre() : typeGraph == 1 ? graphNbVente() : typeGraph == 2 ? graphRepartitionVente() : ""}
+        </div>
+    );
 };
 
 export default Page;
