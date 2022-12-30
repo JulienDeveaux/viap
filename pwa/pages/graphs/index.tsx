@@ -68,7 +68,12 @@ const Page: NextComponentType<NextPageContext> = () => {
       <option value="2021">2021</option>
     </Select>
     <Button
-      onClick={async () => setSeries((await getTimeSeries(years))?.data.prixM2 || [])}
+      onClick={async () => {
+        setLoading(true);
+        setSeries((await getTimeSeries(years))?.data.prixM2 || [])
+        setLoading(false);
+      }
+    }
     >Soumettre</Button>
 
       {/*https://github.com/codesuki/react-d3-components#documentation*/}
@@ -189,6 +194,7 @@ const Page: NextComponentType<NextPageContext> = () => {
     }}/>
     <Button
       onClick={async () => {
+        setLoading(true);
         let data = (await getRepartitionRegion(year, repartitionMode))?.data.values || [];
         setRepartitionFullData(data);
         if (!repartitionStyle) {
@@ -214,6 +220,7 @@ const Page: NextComponentType<NextPageContext> = () => {
           finalData["Autres"] = sum;
           setRepartitionData(finalData);
         }
+        setLoading(false);
       }}
     >Soumettre</Button>
 
