@@ -20,7 +20,7 @@ final class Version20221229184805 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('CREATE TABLE departement_names (code INT NOT NULL, name VARCHAR(255) NOT NULL, PRIMARY KEY(code))');
+        $this->addSql('CREATE TABLE IF NOT EXISTS departement_names (code INT NOT NULL, name VARCHAR(255) NOT NULL, PRIMARY KEY(code))');
     }
 
     public function down(Schema $schema): void
