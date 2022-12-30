@@ -15,4 +15,5 @@ use Symfony\Component\PropertyInfo\Type;
 final class RepartitionRegionInput
 {
     public int $year;
+    public int $mode;
 }

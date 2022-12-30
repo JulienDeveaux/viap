@@ -2,7 +2,6 @@ import {NextComponentType, NextPageContext} from "next";
 import Head from "next/head";
 import {fetch} from "../../utils/dataAccess";
 import {GraphOperation} from "../../types/GraphOperation";
-import {useQuery} from "react-query";
 import React, {useState} from "react";
 import {BarChart, LineChart, PieChart} from "react-d3-components";
 import {Button, Checkbox, Select} from "flowbite-react";
@@ -26,10 +25,11 @@ const getCountPeriod = async (period: number, startDate: Date, endDate: Date) =>
   })
 })
 
-const getRepartitionRegion = async (year : number) => await fetch<GraphOperation>('/graphOperation/repartitionRegion', {
+const getRepartitionRegion = async (year : number, mode: number) => await fetch<GraphOperation>('/graphOperation/repartitionRegion', {
   method: 'POST',
   body: JSON.stringify({
-    year : year
+    year : year,
+    mode: mode
   })
 })
 
@@ -47,6 +47,7 @@ const Page: NextComponentType<NextPageContext> = () => {
   const [repartitionData, setRepartitionData] = useState<any>(undefined);
   const [repartitionFullData, setRepartitionFullData] = useState<any>(undefined);
   const [repartitionStyle, setRepartitionStyle] = useState<boolean>(true);
+  const [repartitionMode, setRepartitionMode] = useState<number>(0);
 
   const datas: any = {};
 
@@ -149,9 +150,15 @@ const Page: NextComponentType<NextPageContext> = () => {
       <option value="2020">2020</option>
       <option value="2021">2021</option>
     </Select>
+    <label className="block mb-2 text-sm font-medium text-dark">Répartition par :</label>
+    <Select
+      multiple={false}
+      onChange={(e: any) => setRepartitionMode(parseInt(e.target.selectedOptions[0].value))}>
+      <option value="0">Département</option>
+      <option value="1">Région</option>
+    </Select>
     <label className="mb-2 text-sm font-medium text-dark">Vue avancée : </label>
     <Checkbox defaultChecked={false} onChange={(check) => {
-      let tmp = repartitionFullData;
       if (!repartitionStyle) {
         setRepartitionStyle(true);
         let values = [];
@@ -176,12 +183,12 @@ const Page: NextComponentType<NextPageContext> = () => {
         setRepartitionData(tmp);
       } else {
         setRepartitionStyle(false);
-        setRepartitionData(tmp);
+        setRepartitionData(repartitionFullData);
       }
     }}/>
     <Button
       onClick={async () => {
-        let data = (await getRepartitionRegion(year))?.data.values || [];
+        let data = (await getRepartitionRegion(year, repartitionMode))?.data.values || [];
         setRepartitionFullData(data);
         if (!repartitionStyle) {
           setRepartitionData(data);

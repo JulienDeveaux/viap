@@ -23,7 +23,7 @@ class GraphOperationProcessor implements ProcessorInterface
         {
             "count_period_post" => $this->service->countPeriodFor($data->period, $data->startPeriod, $data->endPeriod),
             "prix_moyen_post" => $this->service->prixM2ForYears($data->years),
-            "repartition_region_post" => $this->service->repartitionRegionForYear($data->year),
+            "repartition_region_post" => $this->service->repartitionRegionForYear($data->year, $data->mode),
             default => null,
         };
 

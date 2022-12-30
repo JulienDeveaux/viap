@@ -122,7 +122,7 @@ class GraphOperationService
         return $res;
     }
 
-    public function repartitionRegionForYear($year)
+    public function repartitionRegionForYear($year, $mode)
     {
         $vals = $this->repository->createQueryBuilder('n')->getEntityManager()->getConnection()
             ->executeQuery("SELECT count(*) as nb, left(code_postal, -3) as region
@@ -152,6 +152,9 @@ class GraphOperationService
         {
             $departementWithValuesArray->values[$departementNamesArray[$code]] = $nb;
             unset($departementWithValuesArray->values[$code]);
+        }
+        if($mode == 0) {
+            return $departementWithValuesArray;
         }
 
         $regionNames = $this->repository->createQueryBuilder('n')->getEntityManager()->getConnection()
