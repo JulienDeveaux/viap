@@ -129,15 +129,15 @@ class GraphOperationService
             FROM val_foncier n
             WHERE extract(YEAR from n.date_aquisition) = $year
             GROUP BY left(code_postal, -3)");
-        $res = new RepartitionRegionForYearOutput();
+        $departementWithValuesArray = new RepartitionRegionForYearOutput();
 
-        $res->values = [];
+        $departementWithValuesArray->values = [];
 
         foreach ($vals->fetchAllAssociative() as $val)
         {
             if($val["region"] === "")       // don't take data without region
                 continue;
-            $res->values[$val["region"]] = $val["nb"];
+            $departementWithValuesArray->values[$val["region"]] = $val["nb"];
         }
 
         $departementNames = $this->repository->createQueryBuilder('n')->getEntityManager()->getConnection()
@@ -148,10 +148,33 @@ class GraphOperationService
             $departementNamesArray[(int)$name["code"]] = $name["name"];
 
         }
-        foreach ($res->values as $code => $nb)
+        foreach ($departementWithValuesArray->values as $code => $nb)
         {
-            $res->values[$departementNamesArray[$code]] = $nb;
-            unset($res->values[$code]);
+            $departementWithValuesArray->values[$departementNamesArray[$code]] = $nb;
+            unset($departementWithValuesArray->values[$code]);
+        }
+
+        $regionNames = $this->repository->createQueryBuilder('n')->getEntityManager()->getConnection()
+            ->executeQuery("SELECT * FROM Region_names");
+        $regionNamesArray = [];
+        foreach($regionNames->fetchAllAssociative() as $name)
+        {
+            $regionNamesArray[$name['departement']] = $name["region"];
+        }
+
+        $res = new RepartitionRegionForYearOutput();
+        $res->values = [];
+        foreach ($departementWithValuesArray->values as $departement => $nb)
+        {
+            if(in_array($departement, $regionNamesArray)) {
+                if(!isset($res->values[$departement]))
+                    $res->values[$departement] = 0;
+                $res->values[$departement] += $nb;
+            } else {
+                if(!isset($res->values[$regionNamesArray[$departement]]))
+                    $res->values[$regionNamesArray[$departement]] = 0;
+                $res->values[$regionNamesArray[$departement]] += $nb;
+            }
         }
 
         return $res;
