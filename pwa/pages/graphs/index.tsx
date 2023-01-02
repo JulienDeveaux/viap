@@ -6,7 +6,6 @@ import React, {useState} from "react";
 import {BarChart, LineChart, PieChart} from "react-d3-components";
 import {Button, Checkbox, Select} from "flowbite-react";
 
-import * as d3 from "d3";
 import {CountPeriodData} from "../../types/countPeriodData";
 
 const getTimeSeries = async (years: number[]) => await fetch<GraphOperation>('/graphOperation/prix_moyen', {
@@ -240,7 +239,6 @@ const Page: NextComponentType<NextPageContext> = () => {
       className="block mb-2 text-xl font-large text-center text-dark">Année {year}</h2><PieChart
       width={window.innerWidth}
       height={400}
-      sort={d3.values}
       className={"text-white"}
       margin={{top: 10, bottom: 50, left: 50, right: 10}}
       data={{
