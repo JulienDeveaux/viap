@@ -87,4 +87,73 @@ class GraphOperationTest extends ApiTestCase
           ]
         );
     }
+
+    public function testCountPeriodDay(): void
+    {
+        $this->client = static::createClient();
+
+        $this->client->request('POST', "/graphOperation/count_period", [
+            'json' => [
+                'period' => 0,            // jours
+                'startPeriod' => "2018-01-01",
+                'endPeriod' => "2018-01-02"
+            ]
+        ]);
+
+        $this->assertResponseIsSuccessful();
+
+        $this->assertJsonContains([
+            "periods" => [
+                "1/1/2018"=> 6,
+                "2/1/2018" => 692
+            ]
+          ]
+        );
+    }
+
+    public function testCountPeriodMonth(): void
+    {
+        $this->client = static::createClient();
+
+        $this->client->request('POST', "/graphOperation/count_period", [
+            'json' => [
+                'period' => 1,            // mois
+                'startPeriod' => "2018-01-01",
+                'endPeriod' => "2018-02-01"
+            ]
+        ]);
+
+        $this->assertResponseIsSuccessful();
+
+        $this->assertJsonContains([
+            "periods" => [
+                "1/2018"=> 9409,
+                "3/2018" => 19328
+            ]
+          ]
+        );
+    }
+
+    public function testCountPeriodYear(): void
+    {
+        $this->client = static::createClient();
+
+        $this->client->request('POST', "/graphOperation/count_period", [
+            'json' => [
+                'period' => 2,            // années
+                'startPeriod' => "2018-01-01",
+                'endPeriod' => "2019-01-01"
+            ]
+        ]);
+
+        $this->assertResponseIsSuccessful();
+
+        $this->assertJsonContains([
+            "periods" => [
+                "10/2018"=> 116044,
+                "1/2018" => 81627
+            ]
+          ]
+        );
+    }
 }
