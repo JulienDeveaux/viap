@@ -25,4 +25,22 @@ class GraphOperationTest extends ApiTestCase
             )
         ));
     }
+
+    public function testPriMoyenPost()
+    {
+        $this->client = static::createClient();
+
+        $this->client->request('POST', '/graphOperation/prix_moyen', [
+            'json' => [
+                "years" => ["2019", "2020"]
+            ]
+        ]);
+
+        $this->assertJsonContains([
+            "prixM2" => [
+                ["2019" => 1686.778928420297],
+                ["2020" => 1259.3101591669683]
+            ]
+        ]);
+    }
 }
