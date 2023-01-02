@@ -192,7 +192,6 @@ const Page: NextComponentType<NextPageContext> = () => {
         for (let i = values.length - 1; i >= 6; i--) {
           values.pop();
         }
-        values.push(sum);
         let tmp = {};
         for (let i = 0; i < values.length; i++) {
           tmp[Object.keys(data)[i]] = values[i];
@@ -224,7 +223,6 @@ const Page: NextComponentType<NextPageContext> = () => {
           for (let i = values.length - 1; i >= 6; i--) {
             values.pop();
           }
-          values.push(sum);
           let finalData = {};
           for (let i = 0; i < values.length; i++) {
             finalData[Object.keys(data)[i]] = values[i];
