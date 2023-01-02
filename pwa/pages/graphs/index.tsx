@@ -267,7 +267,8 @@ const Page: NextComponentType<NextPageContext> = () => {
               <span></span>
               <span></span>
               <span></span>
-              <h2>Loading ...</h2>
+              <span></span>
+              <h2>Chargement ...</h2>
             </div>
             : typeGraph == 0 ? graphPrixMcarre() : typeGraph == 1 ? graphNbVente() : typeGraph == 2 ? graphRepartitionVente() : ""}
         </div>
