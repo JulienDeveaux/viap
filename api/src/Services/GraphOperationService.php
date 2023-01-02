@@ -108,7 +108,7 @@ class GraphOperationService
         $vals = $this->repository->createQueryBuilder('n')->getEntityManager()->getConnection()
             ->executeQuery("SELECT count(*) as nb, concat($concatStr) as date
             FROM val_foncier n
-            WHERE n.date_aquisition BETWEEN '" . $startDate->format('m/d/y') . "' AND '". $endDate->format('m/d/y') ."'
+            WHERE n.date_aquisition BETWEEN '" . $startDate->format('m/d/Y') . "' AND '". $endDate->format('m/d/Y') ."'
             GROUP BY $groupByStr");
 
         $res = new PeriodCountOutput();

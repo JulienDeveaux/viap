@@ -41,14 +41,16 @@ const Page: NextComponentType<NextPageContext> = () => {
     const [year, setYear] = useState<number>(2018);
     const [loading, setLoading] = useState<boolean>(false);
 
-  const [periodNb, setPeriodNb] = useState<number>(0);
-  const [startPeriod, setStartPeriod] = useState<Date>(new Date(Date.now()));
-  const [endPeriod, setEndPeriod] = useState<Date>(new Date(new Date(Date.now()).setDate(startPeriod.getDate() + 1)));
-  const [countPeriodData, setPeriodData] = useState<any>(undefined);
-  const [repartitionData, setRepartitionData] = useState<any>(undefined);
-  const [repartitionFullData, setRepartitionFullData] = useState<any>(undefined);
-  const [repartitionStyle, setRepartitionStyle] = useState<boolean>(true);
-  const [repartitionMode, setRepartitionMode] = useState<number>(0);
+    const [periodNb, setPeriodNb] = useState<number>(0);
+    const [startPeriod, setStartPeriod] = useState<Date>(new Date(Date.now()));
+    const [endPeriod, setEndPeriod] = useState<Date>(new Date(new Date(Date.now()).setDate(startPeriod.getDate() + 1)));
+    const [countPeriodData, setPeriodData] = useState<any>(undefined);
+    const [repartitionData, setRepartitionData] = useState<any>(undefined);
+    const [repartitionFullData, setRepartitionFullData] = useState<any>(undefined);
+    const [repartitionStyle, setRepartitionStyle] = useState<boolean>(true);
+    const [repartitionMode, setRepartitionMode] = useState<number>(0);
+    const [nativeStartValue, setNativeStartValue] = useState<string>("");
+    const [nativeEndValue, setNativeEndValue] = useState<string>("");
 
   const datas: any = {};
 
@@ -61,6 +63,7 @@ const Page: NextComponentType<NextPageContext> = () => {
     <label className="block mb-2 text-sm font-medium text-dark">Années:</label>
     <Select
       multiple={true}
+      value={years}
       onChange={(e: any) => setYears(Array.from(e.target.selectedOptions, option => parseInt(option.value)))}>
       <option value="2018">2018</option>
       <option value="2019">2019</option>
@@ -84,7 +87,7 @@ const Page: NextComponentType<NextPageContext> = () => {
           label: Object.keys(datas),
           values: Object.keys(datas).map(key => ({x: new Date(Number(key), 1, 1), y: parseFloat(datas[key])}))
         }}
-        tooltipHtml={(_: any, {x, y}: any) => `${x.getFullYear()}: ${y} €`}
+        tooltipHtml={(_: any, {x, y}: any) => `${x.getFullYear()}: ${y.toLocaleString()} €`}
         margin={{top: 10, bottom: 50, left: 100, right: 10}}
         xAxis={{
           label: "Années",
@@ -92,39 +95,46 @@ const Page: NextComponentType<NextPageContext> = () => {
           tickArguments: [Object.keys(datas).length],
         }}
         yAxis={{
-          label: "prix (€)",
-          tickFormat: (x: any) => { return x; },
+          label: "prix (€)"
         }}
       />}
     </React.Fragment>
 
   const graphNbVente = () => <React.Fragment>
-    <h1 className="text-3xl font-bold underline">Nombre de ventes</h1>
+      <h1 className="text-3xl font-bold underline">Nombre de ventes</h1>
 
-    <Select
-      onChange={(e: any) => setPeriodNb(parseInt(e.target.selectedOptions[0].value))}>
-      <option value={0}>Jours</option>
-      <option value={1}>Semaine</option>
-      <option value={2}>mois</option>
-      <option value={3}>année</option>
-    </Select>
+      <Select
+        value={periodNb}
+        onChange={(e: any) => setPeriodNb(parseInt(e.target.selectedOptions[0].value))}>
+        <option value={0}>Jours</option>
+        <option value={1}>Semaine</option>
+        <option value={2}>mois</option>
+        <option value={3}>année</option>
+      </Select>
 
 
-        <label >Start date: </label>
-        <input className="form-control" type="date" onChange={(e) => setStartPeriod(new Date(Date.parse(e.target.value)))} />
-        <br/>
-        <label>End date: </label>
-        <input className="form-control" type="date" onChange={(e) => setEndPeriod(new Date(Date.parse(e.target.value)))} />
-        <br/>
-        <Button
-          onClick={async () => {
-            setLoading(true);
-            setPeriodData((await getCountPeriod(periodNb, startPeriod, endPeriod))?.data.periods);
-            setLoading(false);
-          }}
-        >Soumettre</Button>
+      <label >Start date (inclus): </label>
+      <input className="form-control" type="date" value={nativeStartValue} onChange={(e) =>
+      {
+        setNativeStartValue(e.target.value);
+        setStartPeriod(new Date(Date.parse(e.target.value)));
+      }} />
+      <br/>
+      <label>End date (inclus): </label>
+      <input className="form-control" type="date" value={nativeEndValue} onChange={(e) => {
+        setNativeEndValue(e.target.value);
+        setEndPeriod(new Date(Date.parse(e.target.value)));
+      }} />
+      <br/>
+      <Button
+        onClick={async () => {
+          setLoading(true);
+          setPeriodData((await getCountPeriod(periodNb, startPeriod, endPeriod))?.data.periods);
+          setLoading(false);
+        }}
+      >Soumettre</Button>
 
-      {countPeriodData && Object.keys(countPeriodData).length > 0 && <BarChart
+      {countPeriodData && Object.keys(countPeriodData).length > 0 ? <BarChart
         width={window.innerWidth - 10}
         height={400}
         className={"text-white"}
@@ -141,7 +151,7 @@ const Page: NextComponentType<NextPageContext> = () => {
           tickArguments: [Object.keys(countPeriodData).length],
         }}
         tooltipHtml={(x: any) => `${x}: ${parseInt(countPeriodData[x]).toLocaleString()}`}
-      />}
+      /> : <p>No résults</p>}
     </React.Fragment>
 
   const graphRepartitionVente = () => <React.Fragment>
@@ -150,6 +160,7 @@ const Page: NextComponentType<NextPageContext> = () => {
     <label className="block mb-2 text-sm font-medium text-dark">Années:</label>
     <Select
       multiple={false}
+      value={year}
       onChange={(e: any) => setYear(parseInt(e.target.selectedOptions[0].value))}>
       <option value="2018">2018</option>
       <option value="2019">2019</option>
@@ -159,12 +170,13 @@ const Page: NextComponentType<NextPageContext> = () => {
     <label className="block mb-2 text-sm font-medium text-dark">Répartition par :</label>
     <Select
       multiple={false}
+      value={repartitionMode}
       onChange={(e: any) => setRepartitionMode(parseInt(e.target.selectedOptions[0].value))}>
       <option value="0">Département</option>
       <option value="1">Région</option>
     </Select>
     <label className="mb-2 text-sm font-medium text-dark">Vue avancée : </label>
-    <Checkbox defaultChecked={false} onChange={(check) => {
+    <Checkbox checked={repartitionStyle} defaultChecked={false} onChange={(check) => {
       if (!repartitionStyle) {
         setRepartitionStyle(true);
         let values = [];
