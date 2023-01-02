@@ -44,13 +44,11 @@ class GraphOperationTest extends ApiTestCase
         ]);
     }
 
-    public function testRepartitionRegion(): void
+    public function testRepartitionRegionMode0(): void
     {
         $this->client = static::createClient();
 
         $this->client->request('POST', "/graphOperation/repartitionRegion", [
-            'headers' => ['Content-type' => 'application/json',
-                            'Accept' => 'application/json'],
             'json' => [
                 'year' => 2019,
                 'mode' => 0
@@ -63,6 +61,28 @@ class GraphOperationTest extends ApiTestCase
             "values" => [
                 "Ain"=> 12905,
                 "Savoie" => 12753
+            ]
+          ]
+        );
+    }
+
+    public function testRepartitionRegionMode1(): void
+    {
+        $this->client = static::createClient();
+
+        $this->client->request('POST', "/graphOperation/repartitionRegion", [
+            'json' => [
+                'year' => 2019,
+                'mode' => 1
+            ]
+        ]);
+
+        $this->assertResponseIsSuccessful();
+
+        $this->assertJsonContains([
+            "values" => [
+                "DOM"=> 19141,
+                "Pays de la Loire" => 86713
             ]
           ]
         );
