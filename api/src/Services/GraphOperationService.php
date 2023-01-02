@@ -70,9 +70,7 @@ class GraphOperationService
 
         $query = $this->repository->createQueryBuilder('n')
             ->select('sum(n.prix) as total_prix, count(n.prix) as total_terrain, sum(n.surface) as total_surface')
-            ->where('n.dateAquisition BETWEEN :start AND :end')
-            ->where('n.prix > 0')
-            ->where('n.surface > 0')
+            ->where('n.dateAquisition BETWEEN :start AND :end AND n.prix > 0 AND n.surface > 0')
             ->setParameter('start', $startDate->format('Y-m-d H:i:s'))
             ->setParameter('end', $endDate->format('Y-m-d H:i:s'))
             ->getQuery();
