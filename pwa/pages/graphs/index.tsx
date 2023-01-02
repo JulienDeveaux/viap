@@ -174,7 +174,7 @@ const Page: NextComponentType<NextPageContext> = () => {
       <option value="0">Département</option>
       <option value="1">Région</option>
     </Select>
-    <label className="mb-2 text-sm font-medium text-dark">Vue avancée : </label>
+    <label className="mb-2 text-sm font-medium text-dark">Vue simplifié : </label>
     <Checkbox checked={repartitionStyle} defaultChecked={false} onChange={(check) => {
       if (!repartitionStyle) {
         setRepartitionStyle(true);
