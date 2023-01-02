@@ -59,8 +59,6 @@ class GraphOperationTest extends ApiTestCase
 
         $this->assertResponseIsSuccessful();
 
-        print($this->client->getResponse()->getContent());
-
         $this->assertJsonContains([
             "values" => [
                 "Ain"=> 12905,
