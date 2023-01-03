@@ -8,6 +8,10 @@ commande fixtures : ``docker compose exec php bin/console doctrine:fixtures:load
 
 install packages after compose up: ``docker compose exec pwa pnpm i``
 
+run tests :
+- phpunit : ``docker compose exec php ./vendor/bin/phpunit``
+- jest : ``docker compose exec pwa npm run test``
+
 |Nom|Prénom|login|email|
 |--|--|--|--|
 | Deveaux | Julien | dj180840 | julien.deveaux@etu.univ-lehavre.fr |
