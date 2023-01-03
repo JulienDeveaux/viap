@@ -6,6 +6,7 @@ use ApiPlatform\GraphQl\Resolver\QueryItemResolverInterface;
 use App\Graphql\Outputs\GraphOperationOutput;
 use App\Repository\ValFoncierRepository;
 use App\Services\GraphOperationService;
+use DateTime;
 use Doctrine\DBAL\Exception;
 use stdClass;
 
@@ -29,7 +30,7 @@ class GraphOperationResolver implements QueryItemResolverInterface
         {
             "for_yearGraphOperation" => $this->service->prixM2($args['year']),
             "for_yearsGraphOperation" => $this->service->prixM2ForYears($args['years']),
-            "period_countOperation" => $this->service->countPeriodFor($args["period"], $args["startPeriod"], $args["endPeriod"]),
+            "period_countOperation" => $this->service->countPeriodFor($args["period"], DateTime::createFromFormat("d-m-Y", $args["startPeriod"]), DateTime::createFromFormat("d-m-Y", $args["endPeriod"])),
 
             default => throw new Exception("Unknown operation"),
         };

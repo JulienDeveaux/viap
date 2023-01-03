@@ -72,7 +72,7 @@ use App\State\GraphOperationProvider;
         ),
         new Query(
             resolver: GraphOperationResolver::class,
-            args: ["provider" => ["type" => "Int"], "startPeriod" => ["type" => "DateTime"], "endPeriod" => ["type" => "DateTime"]],
+            args: ["provider" => ["type" => "Int"], "startPeriod" => ["type" => "String"], "endPeriod" => ["type" => "String"]],
             output: PeriodCountOutput::class,
             name: "period_count"
         ),
